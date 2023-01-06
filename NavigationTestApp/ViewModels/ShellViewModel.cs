@@ -1,9 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 
 using NavigationTestApp.Contracts.Services;
+using NavigationTestApp.Helpers;
 using NavigationTestApp.Views;
 
 namespace NavigationTestApp.ViewModels;
@@ -35,8 +36,31 @@ public class ShellViewModel : ObservableRecipient
         set => SetProperty(ref _selected, value);
     }
 
+    public ObservableCollection<NavigationViewItemBase> NavItems
+    {
+        get; set;
+    }
+
     public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService)
     {
+        NavItems = new ObservableCollection<NavigationViewItemBase>();
+        var mainNavItem = new NavigationViewItem()
+        {
+            Content = "Main",
+            Icon = new SymbolIcon(Symbol.Home),
+        };
+        NavigationHelper.SetNavigateTo(mainNavItem, typeof(MainViewModel).FullName);
+
+        var contentNavItem = new NavigationViewItem()
+        {
+            Content = "ContentGrid",
+            Icon = new SymbolIcon(Symbol.ViewAll),
+        };
+        NavigationHelper.SetNavigateTo(contentNavItem, typeof(ContentGridViewModel).FullName);
+
+        NavItems.Add(mainNavItem);
+        NavItems.Add(contentNavItem);
+
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
         NavigationViewService = navigationViewService;
